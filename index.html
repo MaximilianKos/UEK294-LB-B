@@ -11,7 +11,7 @@
 	</head>
 	<body>
 		<h1 id="title">TODO LIST</h1>
-		<form id="login-form">
+		<form onsubmit="addTask(); return false;" id="login-form">
 			<div id="new-task">
 				<input type="text" name="task_name" id="task_name" placeholder="Create a new task..." />
 				<button type="button" id="addButton" onclick="addTask()"><i class="fa-solid fa-circle-plus fa-2xl"></i></button>
