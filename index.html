@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="./css/style.css" />
+		<script src="https://kit.fontawesome.com/9dd7c250f8.js" crossorigin="anonymous"></script>
+		<script src="js/script.js"></script>
+		<title>ToDo List</title>
+	</head>
+	<body>
+		<h1 id="title">TODO LIST</h1>
+		<form id="login-form">
+			<div id="new-task">
+				<input type="text" name="task_name" id="task_name" placeholder="Create a new task..." />
+				<button type="button" id="addButton" onclick="addTask()"><i class="fa-solid fa-circle-plus fa-2xl"></i></button>
+			</div>
+		</form>
+
+		<div id="task-container"></div>
+	</body>
+</html>
