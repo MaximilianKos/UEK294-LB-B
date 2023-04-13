@@ -1,11 +1,28 @@
+const token = getToken();
+
 window.onload = function () {
 	renderTasks();
 };
 
+function getToken() {
+	return sessionStorage.getItem('jwtToken');
+}
+
+// -- GET -- //
+
 async function fetchTasks() {
-	const response = await fetch('http://localhost:3000/tasks');
+	if (!token) {
+		throw new Error('Token not found!');
+	}
+
+	const response = await fetch('http://localhost:3000/auth/jwt/tasks', {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+
 	const tasks = await response.json();
-	return tasks.slice(-6); // get the latest 6 tasks
+	return tasks;
 }
 
 function createTaskCard(task) {
@@ -16,7 +33,7 @@ function createTaskCard(task) {
       <p class="taskID">ID: ${task.id}</p>
       <p>Completed: ${task.completed}</p>
 	  <i class="pen fa-solid fa-pen-to-square fa-lg"></i>
-	  <i class="trash fa-solid fa-trash fa-lg"</i>
+	  <i class="trash fa-solid fa-trash fa-lg" onclick="deleteTask(${task.id})"</i>
     `;
 	return card;
 }
@@ -31,7 +48,14 @@ async function renderTasks() {
 	});
 }
 
+// -- POST -- //
+
 function addTask() {
+	if (!token) {
+		console.error('Token not found!');
+		return;
+	}
+
 	const taskName = document.getElementById('task_name').value;
 
 	const body = {
@@ -39,18 +63,51 @@ function addTask() {
 		title: taskName,
 	};
 
-	fetch('http://localhost:3000/tasks', {
+	fetch('http://localhost:3000/auth/jwt/tasks', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
 		},
 		body: JSON.stringify(body),
 	})
 		.then((response) => response.json())
 		.then((data) => {
-			console.log('Task added:', data);
+			alertify.set('notifier', 'position', 'top-left');
+			alertify.success('Task added');
 		})
 		.catch((error) => {
-			console.error('Error adding task:', error);
+			alertify.set('notifier', 'position', 'top-left');
+			alertify.error('Error adding task');
+		});
+}
+
+// -- DELETE -- //
+
+function deleteTask(taskId) {
+	if (!token) {
+		console.error('Token not found!');
+		return;
+	}
+
+	fetch(`http://localhost:3000/auth/jwt/task/${taskId}`, {
+		method: 'DELETE',
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	})
+		.then((response) => {
+			if (response.status === 200) {
+				alertify.set('notifier', 'position', 'top-left');
+				alertify.success('Successfully deleted Task: ' + taskId);
+				renderTasks();
+			} else {
+				alertify.set('notifier', 'position', 'top-left');
+				alertify.error('Error with deleting Task: q' + taskId);
+			}
+		})
+		.catch((error) => {
+			alertify.set('notifier', 'position', 'top-left');
+			alertify.error('Error with deleting Task: ' + taskId);
 		});
 }

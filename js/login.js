@@ -1,26 +1,39 @@
-document.getElementById('login-form').addEventListener('submit', function (event) {
-	event.preventDefault();
+console.log('a');
 
-	const email = document.getElementById('email').value;
-	const password = document.getElementById('password').value;
+window.onload = function () {
+	document.getElementById('login-form').addEventListener('submit', function (event) {
+		event.preventDefault();
 
-	const data = { email, password };
+		const email = document.getElementById('email').value;
+		const password = document.getElementById('password').value;
 
-	fetch('http://localhost:3000/auth/jwt/sign', {
-		method: 'POST',
-		credentials: 'include',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(data),
-	})
-		.then((response) => response.json())
-		.then((data) => {
-			console.log(data);
-			if (data.redirect) {
-				window.location.href = data.redirect;
-			} else {
-				alert('Incorrect username or password. Please try again.');
-			}
-		});
-});
+		const data = { email, password };
+
+		fetch('http://localhost:3000/auth/jwt/sign', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(data),
+		})
+			.then((response) => {
+				if (response.status === 200) {
+					return response.json();
+				} else {
+					alert('Incorrect Password!');
+					throw new Error('Incorrect Password!');
+				}
+			})
+			.then((data) => {
+				// Save JWT token to local storage
+				sessionStorage.setItem('jwtToken', data.token);
+
+				// Redirect user to index.html
+				window.location.href = '/index.html';
+			})
+			.catch((error) => {
+				// Handle error if needed
+				console.error(error);
+			});
+	});
+};
