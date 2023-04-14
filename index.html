@@ -11,12 +11,30 @@
 	</head>
 	<body>
 		<h1 id="title">TODO LIST</h1>
+
 		<form onsubmit="addTask(); return false;" id="login-form">
 			<div id="new-task">
 				<input type="text" name="task_name" id="task_name" placeholder="Create a new task..." />
 				<button type="button" id="addButton" onclick="addTask()"><i class="fa-solid fa-circle-plus fa-2xl"></i></button>
 			</div>
 		</form>
+
+		<div id="popup-menu" style="display: none">
+			<button class="close-button" onclick="closeEditMenu()">X</button>
+			<h2>Edit Task</h2>
+			<form onsubmit="editTask(); return false;">
+				<label for="title">Title:</label>
+				<input type="text" id="Tasktitle" name="title" /><br />
+
+				<label for="completion">Completion:</label>
+				<select id="completion" name="completion">
+					<option value="true">True</option>
+					<option value="false">False</option></select
+				><br />
+
+				<button type="submit">Save</button>
+			</form>
+		</div>
 
 		<div id="task-container"></div>
 	</body>

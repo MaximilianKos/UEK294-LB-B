@@ -35,7 +35,7 @@ function createTaskCard(task) {
       <h2>${task.title}</h2>
       <p class="taskID">ID: ${task.id}</p>
       <p>Completed: ${task.completed}</p>
-	  <i class="pen fa-solid fa-pen-to-square fa-lg" onclick="editTask(${task.id})"></i>
+	  <i class="pen fa-solid fa-pen-to-square fa-lg" onclick="openEditMenu(${task.id})"></i>
 	  <i class="trash fa-solid fa-trash fa-lg" onclick="deleteTask(${task.id})"</i>
     `;
 	return card;
@@ -141,3 +141,56 @@ function deleteTask(taskId) {
 }
 
 // -- EDIT -- //
+
+let editTaskId;
+
+function openEditMenu(taskId) {
+	editTaskId = taskId;
+
+	const popupMenu = document.getElementById('popup-menu');
+	popupMenu.style.display = 'block';
+}
+
+function closeEditMenu() {
+	const popupMenu = document.getElementById('popup-menu');
+	popupMenu.style.display = 'none';
+}
+
+function editTask() {
+	const form = document.querySelector('#popup-menu form');
+
+	const taskId = editTaskId;
+
+	const formData = new FormData(form);
+	const token = getToken();
+
+	fetch(`http://localhost:3000/auth/jwt/tasks`, {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({
+			id: taskId,
+			completed: formData.get('completion') === 'true',
+			title: formData.get('title'),
+		}),
+	})
+		.then((response) => {
+			if (response.status === 200) {
+				alertify.set('notifier', 'position', 'top-left');
+				alertify.success('Successfully updated Task ' + taskId);
+				closeEditMenu();
+				document.getElementById('Tasktitle').value = '';
+				document.getElementById('completion').value = '';
+				renderTasks();
+			} else {
+				alertify.set('notifier', 'position', 'top-left');
+				alertify.error('Error with updating Task ' + taskId);
+			}
+		})
+		.catch((error) => {
+			alertify.set('notifier', 'position', 'top-left');
+			alertify.error('Error with updating Task ' + taskId);
+		});
+}

@@ -139,3 +139,44 @@ input:focus {
 	right: 10px;
 	font-size: 0.9em;
 }
+
+#popup-menu {
+	width: 400px;
+	height: 400px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 9999;
+	background-color: #121212;
+	padding: 20px;
+	border-radius: 5px;
+}
+
+#popup-menu form input {
+	width: 100%;
+	margin-bottom: 10px;
+	text-align: left;
+	letter-spacing: normal;
+	color: black;
+}
+
+#popup-menu form {
+	margin-top: 10px;
+}
+
+#popup-menu form select {
+	color: black;
+}
+
+#popup-menu .close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background-color: transparent;
+	border: none;
+	color: white;
+	font-size: 1.5em;
+	cursor: pointer;
+	padding: 5px;
+}

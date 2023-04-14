@@ -18,19 +18,17 @@ window.onload = function () {
 				if (response.status === 200) {
 					return response.json();
 				} else {
-					alert('Incorrect Password!');
+					alertify.set('notifier', 'position', 'top-left');
+					alertify.error('Incorrect Password!' + taskId);
 					throw new Error('Incorrect Password!');
 				}
 			})
 			.then((data) => {
-				// Save JWT token to local storage
 				sessionStorage.setItem('jwtToken', data.token);
 
-				// Redirect user to index.html
 				window.location.href = '/index.html';
 			})
 			.catch((error) => {
-				// Handle error if needed
 				console.error(error);
 			});
 	});
