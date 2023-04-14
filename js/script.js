@@ -1,6 +1,8 @@
 const token = getToken();
 if (!token) {
-	window.location.href = '/login.html';
+	const message = 'You are not Logged in!';
+	const encodedMessage = encodeURIComponent(message);
+	window.location.href = `/login.html?message=${encodedMessage}`;
 }
 
 window.onload = function () {

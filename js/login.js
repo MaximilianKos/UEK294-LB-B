@@ -1,4 +1,12 @@
 window.onload = function () {
+	alertify.set('notifier', 'position', 'top-left');
+	const urlParams = new URLSearchParams(window.location.search);
+	const message = urlParams.get('message');
+
+	if (message) {
+		alertify.error(message);
+	}
+
 	document.getElementById('login-form').addEventListener('submit', function (event) {
 		event.preventDefault();
 
@@ -18,8 +26,7 @@ window.onload = function () {
 				if (response.status === 200) {
 					return response.json();
 				} else {
-					alertify.set('notifier', 'position', 'top-left');
-					alertify.error('Incorrect Password!' + taskId);
+					alertify.error('Incorrect Password!');
 					throw new Error('Incorrect Password!');
 				}
 			})
