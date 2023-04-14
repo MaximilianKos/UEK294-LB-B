@@ -168,7 +168,7 @@ function addTask() {
 			body: JSON.stringify(body),
 		})
 			.then((response) => response.json())
-			.then((data) => {
+			.then(() => {
 				alertify.success('Task added');
 				document.getElementById('task_name').value = '';
 
@@ -176,6 +176,7 @@ function addTask() {
 			})
 			.catch((error) => {
 				alertify.error('Error adding Task');
+				console.log(error);
 			});
 	} else {
 		alertify.error('Cannot add a Task with no title');
@@ -206,6 +207,7 @@ function deleteTask(taskId) {
 		})
 		.catch((error) => {
 			alertify.error('Error with deleting Task ' + taskId);
+			console.log(error);
 		});
 }
 
@@ -268,5 +270,6 @@ function editTask() {
 		})
 		.catch((error) => {
 			alertify.error('Error with updating Task ' + taskId);
+			console.log(error);
 		});
 }
