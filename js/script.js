@@ -19,6 +19,10 @@ window.onload = function () {
 
 // -- Single Card view -- //
 
+function openTask(taskId) {
+	window.location.href = `/index.html?task=${taskId}`;
+}
+
 function checkParam() {
 	const urlParams = new URLSearchParams(window.location.search);
 	const taskId = urlParams.get('task');
@@ -55,7 +59,6 @@ function createSingleCard(task) {
       <h2>${task.title}</h2>
       <p class="taskID">ID: ${task.id}</p>
       <p>Completed: ${task.completed}</p>
-	  <i class="pen fa-solid fa-pen-to-square fa-lg" onclick="openEditMenu(${task.id})"></i>
 	  <i class="trash fa-solid fa-trash fa-lg" onclick="deleteTask(${task.id})"</i>
     `;
 	return card;
@@ -73,8 +76,11 @@ async function renderSingleTask(taskId) {
 		const cardsDiv = document.getElementById('task-container');
 		cardsDiv.innerHTML = '';
 
-		const card = createCard(task);
+		const card = createSingleCard(task);
 		cardsDiv.appendChild(card);
+
+		openEditMenu(task.id);
+		document.getElementById('popup-menu').style.cssText += 'top: 70vh; width: 708px; height: 300px;';
 	}
 }
 
@@ -98,13 +104,16 @@ async function getTasks() {
 function createCard(task) {
 	const card = document.createElement('div');
 	card.classList.add('card');
+	card.onclick = function () {
+		openTask(task.id);
+	};
 	card.innerHTML = `
-      <h2>${task.title}</h2>
-      <p class="taskID">ID: ${task.id}</p>
-      <p>Completed: ${task.completed}</p>
-	  <i class="pen fa-solid fa-pen-to-square fa-lg" onclick="openEditMenu(${task.id})"></i>
-	  <i class="trash fa-solid fa-trash fa-lg" onclick="deleteTask(${task.id})"</i>
-    `;
+		<h2>${task.title}</h2>
+		<p class="taskID">ID: ${task.id}</p>
+		<p>Completed: ${task.completed}</p>
+		<i class="pen fa-solid fa-pen-to-square fa-lg" onclick="event.stopPropagation(); openEditMenu(${task.id})"></i>
+		<i class="trash fa-solid fa-trash fa-lg" onclick="event.stopPropagation(); deleteTask(${task.id})"</i>
+	  `;
 	return card;
 }
 
@@ -225,7 +234,6 @@ function editTask() {
 	const title = formData.get('title').trim();
 
 	if (title === '') {
-
 		alertify.error('Title cannot be empty!');
 		return;
 	}
