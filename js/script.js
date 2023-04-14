@@ -14,7 +14,7 @@ if (!token) {
 
 window.onload = function () {
 	alertify.set('notifier', 'position', 'top-left');
-	checkParam();
+	checkParam('do');
 };
 
 // -- Single Card view -- //
@@ -23,13 +23,21 @@ function openTask(taskId) {
 	window.location.href = `/index.html?task=${taskId}`;
 }
 
-function checkParam() {
+function checkParam(type) {
 	const urlParams = new URLSearchParams(window.location.search);
 	const taskId = urlParams.get('task');
-	if (taskId) {
-		renderSingleTask(taskId);
-	} else {
-		renderTasks();
+	if (type === 'check') {
+		if (taskId) {
+			return true;
+		} else {
+			return false;
+		}
+	} else if (type === 'do') {
+		if (taskId) {
+			renderSingleTask(taskId);
+		} else {
+			renderTasks();
+		}
 	}
 }
 
@@ -172,7 +180,11 @@ function addTask() {
 				alertify.success('Task added');
 				document.getElementById('task_name').value = '';
 
-				renderTasks();
+				if (checkParam('check')) {
+					window.location.href = '/index.html';
+				} else {
+					renderTasks();
+				}
 			})
 			.catch((error) => {
 				alertify.error('Error adding Task');
@@ -200,7 +212,11 @@ function deleteTask(taskId) {
 		.then((response) => {
 			if (response.status === 200) {
 				alertify.success('Successfully deleted Task ' + taskId);
-				renderTasks();
+				if (checkParam('check')) {
+					window.location.href = '/index.html';
+				} else {
+					renderTasks();
+				}
 			} else {
 				alertify.error('Error with deleting Task ' + taskId);
 			}
