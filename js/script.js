@@ -89,6 +89,7 @@ async function renderSingleTask(taskId) {
 
 		openEditMenu(task.id);
 		document.getElementById('popup-menu').style.cssText += 'top: 70vh; width: 708px; height: 300px;';
+		document.getElementsByClassName('close-button')[0].remove();
 	}
 }
 
