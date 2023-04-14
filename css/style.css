@@ -30,6 +30,12 @@ a {
 	text-align: center;
 }
 
+#logout {
+	text-align: center;
+	cursor: pointer;
+	transition: 0.1s;
+}
+
 #new-task {
 	margin-top: 100px;
 	text-align: center;

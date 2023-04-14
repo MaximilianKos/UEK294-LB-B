@@ -10,6 +10,13 @@ if (!token) {
 	window.location.href = `/login.html?message=${encodedMessage}`;
 }
 
+function logout() {
+	sessionStorage.removeItem('jwtToken');
+	const message = 'You have been logged out!';
+	const encodedMessage = encodeURIComponent(message);
+	window.location.href = `/login.html?message=${encodedMessage}`;
+}
+
 // -- OnLoad -- //
 
 window.onload = function () {
