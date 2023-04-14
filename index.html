@@ -10,9 +10,9 @@
 		<title>ToDo List</title>
 	</head>
 	<body>
-		<h1 id="title">TODO LIST</h1>
+		<a href="index.html"><h1 id="title">TODO LIST</h1></a>
 
-		<form id="login-form">
+		<form id="login-form" onsubmit="addTask(); return false;">
 			<div id="new-task">
 				<input type="text" name="task_name" id="task_name" placeholder="Create a new task..." />
 				<button type="button" id="addButton" onclick="addTask()"><i class="fa-solid fa-circle-plus fa-2xl"></i></button>
@@ -28,8 +28,8 @@
 
 				<label for="completion">Completion:</label>
 				<select id="completion" name="completion">
-					<option value="true">True</option>
-					<option value="false">False</option></select
+					<option value="false">False</option>
+					<option value="true">True</option></select
 				><br />
 
 				<button type="submit">Save</button>

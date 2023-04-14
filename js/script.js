@@ -1,21 +1,86 @@
+// -- Token -- //
+
 const token = getToken();
+function getToken() {
+	return sessionStorage.getItem('jwtToken');
+}
 if (!token) {
 	const message = 'You are not Logged in!';
 	const encodedMessage = encodeURIComponent(message);
 	window.location.href = `/login.html?message=${encodedMessage}`;
 }
 
+// -- OnLoad -- //
+
 window.onload = function () {
-	renderTasks();
+	alertify.set('notifier', 'position', 'top-left');
+	checkParam();
 };
 
-function getToken() {
-	return sessionStorage.getItem('jwtToken');
+// -- Single Card view -- //
+
+function checkParam() {
+	const urlParams = new URLSearchParams(window.location.search);
+	const taskId = urlParams.get('task');
+	if (taskId) {
+		renderSingleTask(taskId);
+	} else {
+		renderTasks();
+	}
+}
+
+async function getSingleTask(taskId) {
+	if (!token) {
+		throw new Error('Token not found!');
+	}
+
+	const response = await fetch(`http://localhost:3000/auth/jwt/task/${taskId}`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+
+	const task = await response.json();
+	if (response.status === 404) {
+		return null;
+	} else {
+		return task;
+	}
+}
+
+function createSingleCard(task) {
+	const card = document.createElement('div');
+	card.classList.add('card');
+	card.innerHTML = `
+      <h2>${task.title}</h2>
+      <p class="taskID">ID: ${task.id}</p>
+      <p>Completed: ${task.completed}</p>
+	  <i class="pen fa-solid fa-pen-to-square fa-lg" onclick="openEditMenu(${task.id})"></i>
+	  <i class="trash fa-solid fa-trash fa-lg" onclick="deleteTask(${task.id})"</i>
+    `;
+	return card;
+}
+
+async function renderSingleTask(taskId) {
+	const task = await getSingleTask(taskId);
+	if (task === null) {
+		const cardsDiv = document.getElementById('task-container');
+		const noTaskDiv = document.createElement('div');
+		noTaskDiv.innerHTML = `Task with ID ${taskId} not Found!`;
+		noTaskDiv.style.cssText = 'text-align: center; font-size: 30px;';
+		cardsDiv.appendChild(noTaskDiv);
+	} else {
+		const cardsDiv = document.getElementById('task-container');
+		cardsDiv.innerHTML = '';
+
+		const card = createCard(task);
+		cardsDiv.appendChild(card);
+	}
 }
 
 // -- GET -- //
 
-async function fetchTasks() {
+async function getTasks() {
 	if (!token) {
 		throw new Error('Token not found!');
 	}
@@ -30,7 +95,7 @@ async function fetchTasks() {
 	return tasks;
 }
 
-function createTaskCard(task) {
+function createCard(task) {
 	const card = document.createElement('div');
 	card.classList.add('card');
 	card.innerHTML = `
@@ -44,7 +109,7 @@ function createTaskCard(task) {
 }
 
 async function renderTasks() {
-	const tasks = await fetchTasks();
+	const tasks = await getTasks();
 	const cardsDiv = document.getElementById('task-container');
 	cardsDiv.innerHTML = '';
 
@@ -57,7 +122,7 @@ async function renderTasks() {
 	}
 
 	tasks.forEach((task) => {
-		const card = createTaskCard(task);
+		const card = createCard(task);
 		cardsDiv.appendChild(card);
 	});
 }
@@ -75,7 +140,6 @@ function addTask() {
 		const taskElements = document.querySelectorAll('.card h2');
 		for (let i = 0; i < taskElements.length; i++) {
 			if (taskElements[i].textContent === taskName) {
-				alertify.set('notifier', 'position', 'top-left');
 				alertify.error('That Task already exists');
 				return;
 			}
@@ -96,18 +160,15 @@ function addTask() {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				alertify.set('notifier', 'position', 'top-left');
 				alertify.success('Task added');
 				document.getElementById('task_name').value = '';
 
 				renderTasks();
 			})
 			.catch((error) => {
-				alertify.set('notifier', 'position', 'top-left');
 				alertify.error('Error adding Task');
 			});
 	} else {
-		alertify.set('notifier', 'position', 'top-left');
 		alertify.error('Cannot add a Task with no title');
 	}
 }
@@ -128,16 +189,13 @@ function deleteTask(taskId) {
 	})
 		.then((response) => {
 			if (response.status === 200) {
-				alertify.set('notifier', 'position', 'top-left');
 				alertify.success('Successfully deleted Task ' + taskId);
 				renderTasks();
 			} else {
-				alertify.set('notifier', 'position', 'top-left');
 				alertify.error('Error with deleting Task ' + taskId);
 			}
 		})
 		.catch((error) => {
-			alertify.set('notifier', 'position', 'top-left');
 			alertify.error('Error with deleting Task ' + taskId);
 		});
 }
@@ -160,11 +218,22 @@ function closeEditMenu() {
 
 function editTask() {
 	const form = document.querySelector('#popup-menu form');
-
 	const taskId = editTaskId;
-
 	const formData = new FormData(form);
 	const token = getToken();
+
+	const title = formData.get('title').trim();
+
+	if (title === '') {
+
+		alertify.error('Title cannot be empty!');
+		return;
+	}
+
+	if (/^\s*$/.test(title)) {
+		alertify.error('Title cannot be empty!');
+		return;
+	}
 
 	fetch(`http://localhost:3000/auth/jwt/tasks`, {
 		method: 'PUT',
@@ -175,24 +244,21 @@ function editTask() {
 		body: JSON.stringify({
 			id: taskId,
 			completed: formData.get('completion') === 'true',
-			title: formData.get('title'),
+			title: title,
 		}),
 	})
 		.then((response) => {
 			if (response.status === 200) {
-				alertify.set('notifier', 'position', 'top-left');
 				alertify.success('Successfully updated Task ' + taskId);
 				closeEditMenu();
 				document.getElementById('Tasktitle').value = '';
 				document.getElementById('completion').value = '';
 				renderTasks();
 			} else {
-				alertify.set('notifier', 'position', 'top-left');
 				alertify.error('Error with updating Task ' + taskId);
 			}
 		})
 		.catch((error) => {
-			alertify.set('notifier', 'position', 'top-left');
 			alertify.error('Error with updating Task ' + taskId);
 		});
 }
